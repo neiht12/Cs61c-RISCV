@@ -2,6 +2,7 @@ module RISCV_Single_Cycle (
     input clk,
     input rst_n,
     output [31:0] PC_out_top,
+    output [31:0] Instruction_out_top,
     output [31:0] registers[0:31],
     output [31:0] dmem_mem[0:255],
     output [31:0] imem_mem[0:255]
@@ -53,6 +54,7 @@ module RISCV_Single_Cycle (
         .pc(pc)
     );
     assign PC_out_top = pc;
+    assign Instruction_out_top = inst;
     
     // Instruction memory
     I_MEM IMEM_inst(
