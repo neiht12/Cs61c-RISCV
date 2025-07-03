@@ -13,8 +13,10 @@ module D_MEM (
 
     // Write (synchronous)
     always @(posedge clk) begin
-        if (MemRW)
+        if (MemRW) begin
             memory[addr[31:2]] <= write_data;
+            $display("D_MEM: time=%0t, addr=%h, write_data=%h", $time, addr, write_data);
+        end
     end
 
 endmodule
