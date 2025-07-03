@@ -1,5 +1,5 @@
 // Single-Cycle CPU Top-Level Module
-module SingleCycleTop(
+module RISCV_Single_Cycle(
     input         clk,
     input         rst_n
 );
