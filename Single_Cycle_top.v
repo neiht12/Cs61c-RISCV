@@ -37,13 +37,13 @@ module RISCV_Single_Cycle (
     );
 
     // IMEM
-    IMEM IMEM_inst (
+    I_MEM IMEM_inst (
         .addr(pc_out),
         .inst(inst)
     );
 
     // Control Unit
-    ControlUnit ctrl_inst (
+    Control_Unit_Top ctrl_inst (
         .opcode(inst[6:0]),
         .funct3(inst[14:12]),
         .funct7(inst[31:25]),
@@ -72,7 +72,7 @@ module RISCV_Single_Cycle (
     );
 
     // Immediate Generator
-    ImmGen imm_gen_inst (
+    Imm_Gen imm_gen_inst (
         .inst(inst),
         .imm(imm)
     );
@@ -88,7 +88,7 @@ module RISCV_Single_Cycle (
     );
 
     // Data Memory
-    DMEM DMEM_inst (
+    D_MEM DMEM_inst (
         .clk(clk),
         .addr(alu_result),
         .write_data(read_data2),
