@@ -1,0 +1,20 @@
+module D_MEM (
+    input         clk,
+    input         MemRW,         // 1: write, 0: read
+    input  [31:0] addr,          // byte address
+    input  [31:0] write_data,    // data to write
+    output [31:0] read_data      // data read from memory
+);
+
+    reg [31:0] memory [0:255];   // 256 x 32-bit = 1KB
+
+    // Read (asynchronous)
+    assign read_data = memory[addr[31:2]]; // Word-aligned: ignore bits [1:0]
+
+    // Write (synchronous)
+    always @(posedge clk) begin
+        if (MemRW)
+            memory[addr[31:2]] <= write_data;
+    end
+
+endmodule
