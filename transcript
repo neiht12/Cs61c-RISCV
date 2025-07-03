@@ -1,0 +1,43 @@
+# Compile of ALU.v was successful.
+# Compile of ALU_Decode_tb.v was successful.
+# Compile of ALU_Decoder.v was successful.
+# Compile of Branch_Comp.v was successful.
+# Compile of Control_unit_top.v was successful.
+# Compile of D_mem.v was successful.
+# Compile of float_adder.v was successful.
+# Compile of I_mem.v was successful.
+# Compile of Imm_gen.v was successful.
+# Compile of main_decoder.v was successful with warnings.
+# Compile of Mux.v was successful.
+# Compile of PC.v was successful.
+# Compile of Reg_file.v was successful.
+# Compile of Single_Cycle_top.v was successful.
+# Compile of Single_Cycle_top_tb.v was successful.
+# 15 compiles, 0 failed with no errors.
+vsim -gui work.tb_SingleCycleTop
+# vsim -gui work.tb_SingleCycleTop 
+# Start time: 01:10:07 on Jul 04,2025
+# Loading work.tb_SingleCycleTop
+# Loading work.SingleCycleTop
+# Loading work.PC
+# Loading work.I_MEM
+# Loading work.Control_Unit_Top
+# Loading work.main_decoder
+# Loading work.alu_decoder
+# Loading work.Imm_Gen
+# Loading work.RegisterFile
+# Loading work.Mux2
+# Loading work.Mux3
+# Loading work.ALU
+# Loading work.D_MEM
+# Loading work.Branch_Comp
+# ** Warning: (vsim-3008) [CNNODP] - Component name (registers) is not on a downward path.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_SingleCycleTop File: E:/Cs61c/Single_Cycle_top_tb.v Line: 39
+# ** Error: (vsim-3043) Unresolved reference to 'registers' in uut.reg_file.registers.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_SingleCycleTop File: E:/Cs61c/Single_Cycle_top_tb.v Line: 39
+# ** Warning: (vsim-2685) [TFMPC] - Too few port connections for 'branch_comp'.  Expected 5, found 4.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_SingleCycleTop/uut/branch_comp File: E:/Cs61c/Single_Cycle_top.v Line: 120
+# ** Warning: (vsim-3722) E:/Cs61c/Single_Cycle_top.v(120): [TFMPC] - Missing connection for port 'BrUn'.
+# Error loading design
+# End time: 01:10:08 on Jul 04,2025, Elapsed time: 0:00:01
+# Errors: 1, Warnings: 8

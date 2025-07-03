@@ -57,4 +57,4 @@ module main_decoder(
         endcase
     end
 
-endmodule;
+endmodule
