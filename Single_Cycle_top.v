@@ -1,7 +1,8 @@
 // Single-Cycle CPU Top-Level Module
 module RISCV_Single_Cycle(
     input         clk,
-    input         rst_n
+    input         rst_n,
+    output [31:0] Instruction_out_top // expose inst to testbench
 );
 
     // Wires
@@ -19,6 +20,8 @@ module RISCV_Single_Cycle(
     wire [3:0]  ALUControl;
     wire        branch_taken;
 
+    assign Instruction_out_top = inst;
+
     // === Program Counter ===
     PC pc_reg (
         .clk(clk),
@@ -28,7 +31,7 @@ module RISCV_Single_Cycle(
     );
 
     // === Instruction Memory ===
-    I_MEM imem (
+    I_MEM IMEM_inst ( // FIXED
         .addr(pc),
         .inst(inst)
     );
@@ -108,7 +111,7 @@ module RISCV_Single_Cycle(
     );
 
     // === Data Memory ===
-    D_MEM dmem (
+    D_MEM DMEM_inst ( // FIXED
         .clk(clk),
         .MemRW(MemRW),
         .addr(alu_result),
