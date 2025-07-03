@@ -6,7 +6,7 @@ module D_MEM (
     output [31:0] read_data      // data read from memory
 );
 
-    reg [31:0] memory [0:255];   // 256 x 32-bit = 1KB
+    reg [31:0] memory [0:511];   // 256 x 32-bit = 1KB
 
     // Read (asynchronous)
     assign read_data = memory[addr[31:2]]; // Word-aligned: ignore bits [1:0]
