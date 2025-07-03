@@ -10,10 +10,12 @@ module RegisterFile (
 );
 
     reg [31:0] regfile [0:31];   // 32 registers, each 32-bit
-
+    integer i;
+    always @(negedge rst_n) begin
+        for (i = 0; i < 32; i = i + 1)
+            regfile[i] <= 32'h00000000;
+    end
     // Asynchronous read
-    assign rs1_data = (rs1 != 0) ? regfile[rs1] : 32'b0;
-    assign rs2_data = (rs2 != 0) ? regfile[rs2] : 32'b0;
 
     // Synchronous write
     always @(posedge clk) begin
@@ -29,5 +31,7 @@ module RegisterFile (
             $display("RF: time=%0t, x%0d <= 0x%h", $time, rd, write_data);
         end
     end
+    assign rs1_data = (rs1 != 0) ? regfile[rs1] : 32'b0;
+    assign rs2_data = (rs2 != 0) ? regfile[rs2] : 32'b0;
 
 endmodule
