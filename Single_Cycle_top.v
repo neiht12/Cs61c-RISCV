@@ -2,10 +2,7 @@ module RISCV_Single_Cycle (
     input clk,
     input rst_n,
     output [31:0] PC_out_top,
-    output [31:0] Instruction_out_top,
-    output [31:0] registers[0:31],
-    output [31:0] dmem_mem[0:255],
-    output [31:0] imem_mem[0:255]
+    output [31:0] Instruction_out_top
 );
     // PC
     wire [31:0] pc, next_pc, pc_plus4, pc_branch;
@@ -61,12 +58,6 @@ module RISCV_Single_Cycle (
         .addr(pc),
         .inst(inst)
     );
-    genvar i;
-    generate
-        for (i = 0; i < 256; i = i + 1) begin : imem_mem_export
-            assign imem_mem[i] = IMEM_inst.memory[i];
-        end
-    endgenerate
     
     // Control unit
     Control_Unit_Top control_unit(
@@ -101,11 +92,6 @@ module RISCV_Single_Cycle (
         .rs1_data(rs1_data),
         .rs2_data(rs2_data)
     );
-    generate
-        for (i = 0; i < 32; i = i + 1) begin : regfile_export
-            assign registers[i] = Reg_inst.regfile[i];
-        end
-    endgenerate
     
     // ALU input A mux
     Mux2 mux_a(
@@ -138,11 +124,6 @@ module RISCV_Single_Cycle (
         .write_data(rs2_data),
         .read_data(dmem_read_data)
     );
-    generate
-        for (i = 0; i < 256; i = i + 1) begin : dmem_mem_export
-            assign dmem_mem[i] = DMEM_inst.memory[i];
-        end
-    endgenerate
     // Branch comparator
     Branch_Comp branch_comp(
         .a(rs1_data),
@@ -170,4 +151,12 @@ module RISCV_Single_Cycle (
     // assign alu_result_out = alu_result;
     // assign pc_out = pc;
     // assign inst_out = inst;
+
+    // Debug: In giá trị các tín hiệu khi ghi vào D_MEM
+    always @(posedge clk) begin
+        if (MemRW) begin
+            $display("DEBUG: time=%0t, PC=%h, rs1_data=%h, imm_out=%h, ALU result=%h, addr=%h, write_data=%h, ASel=%b, BSel=%b, ALUControl=%b",
+                $time, pc, rs1_data, imm_out, alu_result, alu_result, rs2_data, ASel, BSel, ALUControl);
+        end
+    end
 endmodule

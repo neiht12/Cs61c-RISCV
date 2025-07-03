@@ -7,8 +7,7 @@ module RegisterFile (
     input  [4:0]  rd,            // Destination register
     input  [31:0] write_data,    // Data to write to rd
     output [31:0] rs1_data,      // Output of rs1
-    output [31:0] rs2_data,      // Output of rs2
-    output [31:0] registers[0:31]
+    output [31:0] rs2_data      // Output of rs2
 );
 
     reg [31:0] regfile [0:31];   // 32 registers, each 32-bit
@@ -37,11 +36,5 @@ module RegisterFile (
     assign rs2_data = (rs2 != 0) ? regfile[rs2] : 32'b0;
 
     // Export all registers
-    genvar j;
-    generate
-        for (j = 0; j < 32; j = j + 1) begin : reg_export
-            assign registers[j] = regfile[j];
-        end
-    endgenerate
 
 endmodule
