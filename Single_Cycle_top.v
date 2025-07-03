@@ -155,8 +155,8 @@ module RISCV_Single_Cycle (
     // Debug: In giá trị các tín hiệu khi ghi vào D_MEM
     always @(posedge clk) begin
         if (MemRW) begin
-            $display("DEBUG: time=%0t, PC=%h, inst=%h, rs1=%d, rs2=%d, rd=%d, rs1_data=%h, rs2_data=%h, imm_out=%h, ALU result=%h, addr=%h, write_data=%h, ASel=%b, BSel=%b, ALUControl=%b, MemRW = %b, RegWEn = %b, WBSel = %b, PCSel = %b, ImmSel = %b,ALU_op = %b, funct3 = %b, funct7b5 = %b",
-                $time, pc, inst, rs1, rs2, rd, rs1_data, rs2_data, imm_out, alu_result, alu_result, rs2_data, ASel, BSel, ALUControl, MemRW, RegWEn, WBSel, PCSel, ImmSel,ALU_op, funct3, funct7b5);
+            $display("DEBUG: time=%0t, PC=%h, inst=%h, rs1=%d, rs2=%d, rd=%d, rs1_data=%h, rs2_data=%h, imm_out=%h, ALU result=%h, addr=%h, write_data=%h, ASel=%b, BSel=%b, ALUControl=%b, MemRW = %b, RegWEn = %b, WBSel = %b, PCSel = %b, ImmSel = %b,",
+                $time, pc, inst, rs1, rs2, rd, rs1_data, rs2_data, imm_out, alu_result, alu_result, rs2_data, ASel, BSel, ALUControl, MemRW, RegWEn, WBSel, PCSel, ImmSel);
         end
     end
 endmodule
