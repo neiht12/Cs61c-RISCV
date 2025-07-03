@@ -1,6 +1,10 @@
 module RISCV_Single_Cycle (
     input clk,
-    input rst_n
+    input rst_n,
+    output [31:0] PC_out_top,
+    output [31:0] registers[0:31],
+    output [31:0] dmem_mem[0:255],
+    output [31:0] imem_mem[0:255]
 );
     // PC
     wire [31:0] pc, next_pc, pc_plus4, pc_branch;
@@ -42,18 +46,25 @@ module RISCV_Single_Cycle (
     wire pcsel_branch = branch_taken & PCSel;
     
     // PC
-    PC pc_inst(
+    PC PC_out_top(
         .clk(clk),
         .rst_n(rst_n),
         .next_pc(next_pc),
         .pc(pc)
     );
+    assign PC_out_top = pc;
     
     // Instruction memory
-    I_MEM imem(
+    I_MEM IMEM_inst(
         .addr(pc),
         .inst(inst)
     );
+    genvar i;
+    generate
+        for (i = 0; i < 256; i = i + 1) begin : imem_mem_export
+            assign imem_mem[i] = IMEM_inst.memory[i];
+        end
+    endgenerate
     
     // Control unit
     Control_Unit_Top control_unit(
@@ -77,7 +88,7 @@ module RISCV_Single_Cycle (
     );
     
     // Register file
-    RegisterFile reg_file(
+    RegisterFile Reg_inst(
         .clk(clk),
         .RegWEn(RegWEn),
         .rs1(rs1),
@@ -87,6 +98,11 @@ module RISCV_Single_Cycle (
         .rs1_data(rs1_data),
         .rs2_data(rs2_data)
     );
+    generate
+        for (i = 0; i < 32; i = i + 1) begin : regfile_export
+            assign registers[i] = Reg_inst.regfile[i];
+        end
+    endgenerate
     
     // ALU input A mux
     Mux2 mux_a(
@@ -112,13 +128,18 @@ module RISCV_Single_Cycle (
         .Sign(alu_sign)
     );
     // Data memory
-    D_MEM dmem(
+    D_MEM DMEM_inst(
         .clk(clk),
         .MemRW(MemRW),
         .addr(alu_result),
         .write_data(rs2_data),
         .read_data(dmem_read_data)
     );
+    generate
+        for (i = 0; i < 256; i = i + 1) begin : dmem_mem_export
+            assign dmem_mem[i] = DMEM_inst.memory[i];
+        end
+    endgenerate
     // Branch comparator
     Branch_Comp branch_comp(
         .a(rs1_data),
