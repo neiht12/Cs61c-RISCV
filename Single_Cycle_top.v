@@ -1,117 +1,149 @@
-// ===============================
-// RISCV_Single_Cycle.v (Đã sửa)
-// ===============================
-
 module RISCV_Single_Cycle (
     input clk,
-    input rst_n,
-    output [31:0] PC_out_top,
-    output [31:0] Instruction_out_top,
-    output [31:0] x[0:31],
-    output [31:0] dmem[0:255]
+    input rst_n
 );
-
-    // Wires
-    wire [31:0] pc_out, pc_in, inst, imm, read_data1, read_data2, alu_result, mem_read_data, write_data;
-    wire [31:0] alu_operand2, pc_plus_4, branch_target, jalr_target;
-    wire reg_write, mem_read, mem_write, mem_to_reg, alu_src, branch, jump, zero;
-    wire [3:0] alu_op;
-    wire [1:0] pc_src;
-    wire pc_write;
-
-    // PC logic
-    assign pc_write = 1'b1;
-    assign pc_plus_4 = pc_out + 4;
-    assign branch_target = pc_out + imm;
-    assign jalr_target = read_data1 + imm;
-    assign pc_in = (pc_src == 2'b00) ? pc_plus_4 :
-                   (pc_src == 2'b01) ? branch_target :
-                   (pc_src == 2'b10) ? jalr_target : pc_plus_4;
-
-    PC pc_inst (
+    // PC
+    wire [31:0] pc, next_pc, pc_plus4, pc_branch;
+    
+    // Instruction
+    wire [31:0] inst;
+    
+    // Control signals
+    wire BrUn, ASel, BSel, MemRW, RegWEn, PCSel;
+    wire [2:0] ImmSel;
+    wire [1:0] WBSel;
+    wire [3:0] ALUControl;
+    
+    // Immediate
+    wire [31:0] imm_out;
+    
+    // Register file
+    wire [4:0] rs1 = inst[19:15];
+    wire [4:0] rs2 = inst[24:20];
+    wire [4:0] rd  = inst[11:7];
+    wire [31:0] rs1_data, rs2_data, reg_write_data;
+    
+    // ALU
+    wire [31:0] alu_a, alu_b, alu_result;
+    wire alu_zero, alu_sign;
+    
+    // Data memory
+    wire [31:0] dmem_read_data;
+    
+    // Branch comparator
+    wire branch_taken;
+    
+    // PC + 4
+    assign pc_plus4 = pc + 32'd4;
+    // PC + imm (for branch/jump)
+    assign pc_branch = pc + imm_out;
+    
+    // Next PC selection
+    wire pcsel_branch = branch_taken & PCSel;
+    
+    // PC
+    PC pc_inst(
         .clk(clk),
         .rst_n(rst_n),
-        .pc_in(pc_in),
-        .pc_write(pc_write),
-        .pc_out(pc_out)
+        .next_pc(next_pc),
+        .pc(pc)
     );
-
-    // IMEM
-    I_MEM IMEM_inst (
-        .addr(pc_out),
+    
+    // Instruction memory
+    I_MEM imem(
+        .addr(pc),
         .inst(inst)
     );
-
-    // Control Unit
-    Control_Unit_Top ctrl_inst (
-        .opcode(inst[6:0]),
-        .funct3(inst[14:12]),
-        .funct7(inst[31:25]),
-        .reg_write(reg_write),
-        .mem_read(mem_read),
-        .mem_write(mem_write),
-        .mem_to_reg(mem_to_reg),
-        .alu_op(alu_op),
-        .alu_src(alu_src),
-        .branch(branch),
-        .jump(jump),
-        .pc_src(pc_src)
+    
+    // Control unit
+    Control_Unit_Top control_unit(
+        .instr(inst),
+        .BrUn(BrUn),
+        .ASel(ASel),
+        .BSel(BSel),
+        .MemRW(MemRW),
+        .RegWEn(RegWEn),
+        .ImmSel(ImmSel),
+        .WBSel(WBSel),
+        .PCSel(PCSel),
+        .ALUControl(ALUControl)
     );
-
-    // Register File
-    RegisterFile Reg_inst (
+    
+    // Immediate generator
+    Imm_Gen imm_gen(
+        .instr(inst),
+        .ImmSel(ImmSel),
+        .imm_out(imm_out)
+    );
+    
+    // Register file
+    RegisterFile reg_file(
         .clk(clk),
-        .rst_n(rst_n),
-        .rs1(inst[19:15]),
-        .rs2(inst[24:20]),
-        .rd(inst[11:7]),
-        .write_data(write_data),
-        .reg_write(reg_write),
-        .read_data1(read_data1),
-        .read_data2(read_data2)
+        .RegWEn(RegWEn),
+        .rs1(rs1),
+        .rs2(rs2),
+        .rd(rd),
+        .write_data(reg_write_data),
+        .rs1_data(rs1_data),
+        .rs2_data(rs2_data)
     );
-
-    // Immediate Generator
-    Imm_Gen imm_gen_inst (
-        .inst(inst),
-        .imm(imm)
+    
+    // ALU input A mux
+    Mux2 mux_a(
+        .in0(rs1_data),
+        .in1(pc),
+        .sel(ASel),
+        .out(alu_a)
     );
-
+    // ALU input B mux
+    Mux2 mux_b(
+        .in0(rs2_data),
+        .in1(imm_out),
+        .sel(BSel),
+        .out(alu_b)
+    );
     // ALU
-    assign alu_operand2 = alu_src ? imm : read_data2;
-    ALU alu_inst (
-        .operand1(read_data1),
-        .operand2(alu_operand2),
-        .alu_op(alu_op),
+    ALU alu(
+        .a(alu_a),
+        .b(alu_b),
+        .alu_control(ALUControl),
         .result(alu_result),
-        .zero(zero)
+        .zero(alu_zero),
+        .Sign(alu_sign)
     );
-
-    // Data Memory
-    D_MEM DMEM_inst (
+    // Data memory
+    D_MEM dmem(
         .clk(clk),
+        .MemRW(MemRW),
         .addr(alu_result),
-        .write_data(read_data2),
-        .mem_write(mem_write),
-        .mem_read(mem_read),
-        .read_data(mem_read_data)
+        .write_data(rs2_data),
+        .read_data(dmem_read_data)
     );
-
-    // Write-back
-    assign write_data = mem_to_reg ? mem_read_data : 
-                        (jump ? pc_plus_4 : alu_result);
-
-    // Outputs for testbench
-    assign PC_out_top = pc_out;
-    assign Instruction_out_top = inst;
-
-    genvar i;
-    generate
-        for (i = 0; i < 32; i = i + 1) begin
-            assign x[i] = Reg_inst.registers[i];
-        end
-        for (i = 0; i < 256; i = i + 1) begin
-            assign dmem[i] = DMEM_inst.memory[i];
-        end
-    endgenerate
+    // Branch comparator
+    Branch_Comp branch_comp(
+        .a(rs1_data),
+        .b(rs2_data),
+        .funct3(inst[14:12]),
+        .BrUn(BrUn),
+        .branch_taken(branch_taken)
+    );
+    // Next PC mux (branch/jump)
+    Mux2 mux_pc(
+        .in0(pc_plus4),
+        .in1(pc_branch),
+        .sel(pcsel_branch),
+        .out(next_pc)
+    );
+    // Write-back mux
+    Mux3 mux_wb(
+        .in0(dmem_read_data),
+        .in1(alu_result),
+        .in2(pc_plus4),
+        .sel(WBSel),
+        .out(reg_write_data)
+    );
+    // Xuất tín hiệu debug nếu cần
+    // assign alu_result_out = alu_result;
+    // assign pc_out = pc;
+    // assign inst_out = inst;
 endmodule

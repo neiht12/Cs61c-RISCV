@@ -21,6 +21,7 @@ module RegisterFile (
             regfile[rd] <= write_data;
         end
     end
+    
 
     // Optional: debug display
     always @(posedge clk) begin
