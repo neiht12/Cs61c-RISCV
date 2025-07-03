@@ -155,8 +155,8 @@ module RISCV_Single_Cycle (
     // Debug: In giá trị các tín hiệu khi ghi vào D_MEM
     always @(posedge clk) begin
         if (MemRW) begin
-            $display("DEBUG: time=%0t, PC=%h, inst=%h, rs1=%d, rs2=%d, rd=%d, rs1_data=%h, rs2_data=%h, imm_out=%h, ALU result=%h, addr=%h, write_data=%h, ASel=%b, BSel=%b, ALUControl=%b",
-                $time, pc, inst, rs1, rs2, rd, rs1_data, rs2_data, imm_out, alu_result, alu_result, rs2_data, ASel, BSel, ALUControl);
+            $display("DEBUG: time=%0t, PC=%h, inst=%h, rs1=%d, rs2=%d, rd=%d, rs1_data=%h, rs2_data=%h, imm_out=%h, ALU result=%h, addr=%h, write_data=%h, ASel=%b, BSel=%b, ALUControl=%b, MemRW = %b",
+                $time, pc, inst, rs1, rs2, rd, rs1_data, rs2_data, imm_out, alu_result, alu_result, rs2_data, ASel, BSel, ALUControl, MemRW);
         end
     end
 endmodule
