@@ -90,6 +90,7 @@ module RISCV_Single_Cycle (
     // Register file
     RegisterFile Reg_inst(
         .clk(clk),
+        .rst_n(rst_n),
         .RegWEn(RegWEn),
         .rs1(rs1),
         .rs2(rs2),

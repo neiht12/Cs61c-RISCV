@@ -1,5 +1,6 @@
 module RegisterFile (
     input         clk,
+    input         rst_n,
     input         RegWEn,        // Register write enable
     input  [4:0]  rs1,           // Source register 1
     input  [4:0]  rs2,           // Source register 2
