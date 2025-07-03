@@ -15,27 +15,27 @@ module main_decoder(
                 RegWEn = 1; ImmSel = 3'b000; WBSel = 2'b01 ; PCSel = 0;
             end
             7'b0000011: begin // Load
-                alu_op = 2'b01; // ALU operation for load
+                alu_op = 2'b00; // ALU operation for load
                 BrUn = 0; ASel = 0; BSel = 1; MemRW = 0;
                 RegWEn = 1; ImmSel = 3'b000; WBSel = 2'b00; PCSel = 0;
             end
             7'b0100011: begin // Store
-                alu_op = 2'b01; // ALU operation for store
+                alu_op = 2'b00; // ALU operation for store
                 BrUn = 0; ASel = 0; BSel = 1; MemRW = 1;
                 RegWEn = 0; ImmSel = 3'b001; WBSel = 2'b01; PCSel = 0;
             end
             7'b1100011: begin // Branch
-                alu_op = 2'b10; // ALU operation for branch
+                alu_op = 2'b01; // ALU operation for branch
                 BrUn = 1; ASel = 0; BSel = 1; MemRW = 0;
                 RegWEn = 0; ImmSel = 3'b010; WBSel = 2'b01; PCSel = 1;
             end
             7'b1101111: begin // Jal
-                alu_op = 2'b11; // ALU operation for jump and link
+                alu_op = 2'b00; // ALU operation for jump and link
                 BrUn = 0; ASel = 1; BSel = 0; MemRW = 0;
                 RegWEn = 1; ImmSel = 3'b011; WBSel = 2'b10; PCSel = 1;
             end
             7'b0010011: begin // I-type ALU
-                alu_op = 2'b00; // ALU operation for I-type
+                alu_op = 2'b10; // ALU operation for I-type
                 BrUn = 0; ASel = 0; BSel = 1; MemRW = 0;
                 RegWEn = 1; ImmSel = 3'b000; WBSel = 2'b01; PCSel = 0;
             end
