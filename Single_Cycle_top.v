@@ -46,7 +46,7 @@ module RISCV_Single_Cycle (
     wire pcsel_branch = branch_taken & PCSel;
     
     // PC
-    PC PC_out_top(
+    PC pc_inst(
         .clk(clk),
         .rst_n(rst_n),
         .next_pc(next_pc),
