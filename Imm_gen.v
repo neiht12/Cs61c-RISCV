@@ -1,6 +1,6 @@
 module Imm_Gen (
     input  [31:0] instr,
-    input  [2:0]  ImmSel,       // Chọn loại immediate
+    input  [2:0]  ImmSel,       
     output reg [31:0] imm_out
 );
 
