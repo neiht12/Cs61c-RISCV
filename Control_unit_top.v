@@ -1,6 +1,6 @@
 module Control_Unit_Top(
     input  [31:0] instr,
-    output        BrUn, ASel, BSel, MemRW,
+    output        BrUn, ASel, BSel, MemRW,Jump,
     output        RegWEn,
     output [2:0]  ImmSel,
     output [1:0]  WBSel,
@@ -28,7 +28,8 @@ module Control_Unit_Top(
         .RegWEn(RegWEn),
         .ImmSel(ImmSel),
         .WBSel(WBSel),
-        .PCSel(PCSel)
+        .PCSel(PCSel),
+        .Jump(Jump)
     );
 
     // --- ALU decoder ---

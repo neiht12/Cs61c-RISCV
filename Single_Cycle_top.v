@@ -5,13 +5,13 @@ module RISCV_Single_Cycle (
     output [31:0] Instruction_out_top
 );
     // PC
-    wire [31:0] pc, next_pc, pc_plus4, pc_branch;
+    wire [31:0] pc, next_pc, pc_plus4;
     
     // Instruction
     wire [31:0] inst;
     
     // Control signals
-    wire BrUn, ASel, BSel, MemRW, RegWEn, PCSel;
+    wire BrUn, ASel, BSel, MemRW, RegWEn, PCSel, Jump;
     wire [2:0] ImmSel;
     wire [1:0] WBSel;
     wire [3:0] ALUControl;
@@ -27,7 +27,6 @@ module RISCV_Single_Cycle (
     
     // ALU
     wire [31:0] alu_a, alu_b, alu_result;
-    wire alu_zero, alu_sign;
     
     // Data memory
     wire [31:0] dmem_read_data;
@@ -37,10 +36,8 @@ module RISCV_Single_Cycle (
     
     // PC + 4
     assign pc_plus4 = pc + 32'd4;
-    // PC + imm (for branch/jump)
-    assign pc_branch = pc + imm_out;
     
-    // Next PC selection
+    // Next PC selection: sử dụng ALU result cho branch target
     wire pcsel_branch = branch_taken & PCSel;
     
     // PC
@@ -70,7 +67,8 @@ module RISCV_Single_Cycle (
         .ImmSel(ImmSel),
         .WBSel(WBSel),
         .PCSel(PCSel),
-        .ALUControl(ALUControl)
+        .ALUControl(ALUControl),
+        .Jump(Jump)
     );
     
     // Immediate generator
@@ -112,9 +110,7 @@ module RISCV_Single_Cycle (
         .a(alu_a),
         .b(alu_b),
         .alu_control(ALUControl),
-        .result(alu_result),
-        .zero(alu_zero),
-        .Sign(alu_sign)
+        .result(alu_result)
     );
     // Data memory
     D_MEM DMEM_inst(
@@ -129,13 +125,14 @@ module RISCV_Single_Cycle (
         .a(rs1_data),
         .b(rs2_data),
         .funct3(inst[14:12]),
+        .Jump(Jump),
         .BrUn(BrUn),
         .branch_taken(branch_taken)
     );
-    // Next PC mux (branch/jump)
+    // Next PC mux (branch/jump): sử dụng ALU result làm branch target
     Mux2 mux_pc(
         .in0(pc_plus4),
-        .in1(pc_branch),
+        .in1(alu_result),
         .sel(pcsel_branch),
         .out(next_pc)
     );

@@ -2,9 +2,7 @@ module ALU (
     input [31:0] a,
     input [31:0] b,
     input [3:0] alu_control,
-    output reg [31:0] result,
-    output reg zero,
-    output reg Sign
+    output reg [31:0] result
 );
     wire [31:0] sum;
     assign sum = a + (alu_control[0] ? ~b : b) + alu_control[0];
@@ -23,7 +21,5 @@ module ALU (
             default: result = 32'b0;
         endcase
 
-        zero = (result == 32'b0);
-        Sign = result[31];
     end
 endmodule

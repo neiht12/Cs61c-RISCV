@@ -9,7 +9,7 @@ module Imm_Gen (
     wire [31:0] immS = {{20{instr[31]}}, instr[31:25], instr[11:7]}; // S-type
     wire [31:0] immB = {{19{instr[31]}}, instr[31], instr[7], instr[30:25], instr[11:8], 1'b0}; // B-type
     wire [31:0] immU = {instr[31:12], 12'b0}; // U-type
-    wire [31:0] immJ = {{11{instr[31]}}, instr[31], instr[19:12], instr[20], instr[30:21], 1'b0}; // J-type
+    wire [31:0] immJ = {{11{instr[31]}}, instr[31], instr[19:12], instr[20], instr[30:21], 1'b0}; // J-type: imm[20|10:1|11|19:12] + sign ext
 
     always @(*) begin
         case (ImmSel)
